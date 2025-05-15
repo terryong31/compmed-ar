@@ -1,0 +1,2 @@
+C:/Users/terry/AndroidStudioProjects/compmedar/android/app/.cxx/Debug/636o4x4w/x86/CMakeFiles/edit_cache.dir
+C:/Users/terry/AndroidStudioProjects/compmedar/android/app/.cxx/Debug/636o4x4w/x86/CMakeFiles/rebuild_cache.dir

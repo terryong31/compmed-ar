@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "523184550566",
+    "firebase_url": "https://compmed-ar-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "compmed-ar",
+    "storage_bucket": "compmed-ar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523184550566:android:87f2ccace054696e067a67",
+        "android_client_info": {
+          "package_name": "edu.qiu.compmed.compmed_ar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523184550566-jjbh30nbjk35k6mhe77ite4104h8j6ir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.qiu.compmed.compmed_ar",
+            "certificate_hash": "0c1bcfc738a791ce73359b3bd11fa312735c8afc"
+          }
+        },
+        {
+          "client_id": "523184550566-n126llh8lqdvo1341ch6h9c7t8ec8l4f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.qiu.compmed.compmed_ar",
+            "certificate_hash": "73ff090af35a10a6d6839abae6ee813c06bb0748"
+          }
+        },
+        {
+          "client_id": "523184550566-ndu8vpte98k51d7vovpp53l5l0hpqk39.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.qiu.compmed.compmed_ar",
+            "certificate_hash": "62db8492c97b505a514066813664adc6e6e7a3ed"
+          }
+        },
+        {
+          "client_id": "523184550566-4qj5p022rh9rt91unbi48457b2mgoap1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1Y7dJKv5dOBKGkMf_KYS8FNMLxwFjJyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523184550566-4qj5p022rh9rt91unbi48457b2mgoap1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "523184550566-i8fpj0d2lmevtt49rfl41k1a2bm1bnl8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "edu.qiu.compmed.compmedAr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

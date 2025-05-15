@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+    <style>
+        body, model-viewer {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #f0f0f0;
+        }
+        .hotspot {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: red;
+          border: none;
+        }
+        .answer-box {
+          width: 100px;
+          height: 30px;
+          background-color: white;
+          border: 1px solid #90CAF9;
+          border-radius: 4px;
+          color: grey;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 20px;
+          cursor: pointer;
+        }
+        .answered {
+          background-color: #BBDEFB;
+          color: #1976D2;
+        }
+        #error-message {
+          color: red;
+          font-size: 16px;
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+<model-viewer id="modelViewer" src="" alt="3D Model" camera-controls auto-rotate style="background-color: transparent;">
+</model-viewer>
+<div id="error-message"></div>
+
+<script>
+    function log(msg) {
+      console.log(msg);
+      if (window.flutter_inappwebview) {
+        window.flutter_inappwebview.callHandler('logMessage', msg);
+      }
+    }
+
+    log('HTML loaded');
+    const modelViewer = document.getElementById('modelViewer');
+    const errorMessage = document.getElementById('error-message');
+    let currentAnswers = {};
+
+    function updateHotspots(modelUrl, annotationsJson) {
+      log('updateHotspots called with modelUrl: ' + modelUrl);
+      log('Annotations JSON: ' + annotationsJson);
+      modelViewer.src = modelUrl;
+      fetch(modelUrl, { method: 'HEAD' })
+        .then(response => {
+          log('Fetch HEAD response status: ' + response.status);
+          if (!response.ok) {
+            throw new Error('Fetch failed with status: ' + response.status);
+          }
+          log('Model URL is accessible');
+        })
+        .catch(error => {
+          log('Fetch error: ' + error.message);
+          errorMessage.textContent = 'Fetch error: ' + error.message;
+        });
+      try {
+        const annotations = JSON.parse(annotationsJson);
+        log('Parsed annotations: ' + JSON.stringify(annotations));
+        let hotspotsHtml = '';
+        annotations.forEach(annotation => {
+          const id = annotation.id || '';
+          const position = annotation.position || '0 0 0';
+          const normal = annotation.normal || '0 0 1';
+          const answer = currentAnswers[id] || 'Drop here';
+          hotspotsHtml += `
+            <button slot="hotspot-${id}" class="hotspot" data-position="${position}" data-normal="${normal}"></button>
+            <div slot="hotspot-${id}-answer" class="answer-box ${answer !== 'Drop here' ? 'answered' : ''}" data-position="${position}" data-normal="${normal}" data-id="${id}">${answer}</div>
+          `;
+        });
+        modelViewer.innerHTML = hotspotsHtml;
+        log('Hotspots HTML set: ' + hotspotsHtml);
+        setupDragTargets();
+        errorMessage.textContent = '';
+      } catch (e) {
+        log('Error parsing annotations: ' + e.message);
+        errorMessage.textContent = 'Error loading annotations: ' + e.message;
+      }
+    }
+
+    function setupDragTargets() {
+      const answerBoxes = document.querySelectorAll('.answer-box');
+      log('Setting up drag targets, found: ' + answerBoxes.length);
+      answerBoxes.forEach(box => {
+        box.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          log('Drag over: ' + box.getAttribute('data-id'));
+        });
+        box.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const data = e.dataTransfer.getData('text/plain');
+          const parts = data.split('|');
+          const id = parts[0].split('-')[1] + '-' + parts[0].split('-')[2]; // Extract annotation ID
+          const answer = parts[1];
+          box.textContent = answer;
+          box.classList.add('answered');
+          currentAnswers[id] = answer;
+          log('Dropped: id=' + id + ', answer=' + answer);
+          window.flutter_inappwebview?.callHandler('updateAnswer', JSON.stringify({ id: id, answer: answer }));
+        });
+      });
+    }
+
+    modelViewer.addEventListener('load', () => {
+      log('Model loaded successfully');
+      errorMessage.textContent = 'Model loaded!';
+    });
+
+    modelViewer.addEventListener('error', (event) => {
+      const errorMsg = event.detail?.message || 'Unknown error';
+      log('ModelViewer error: ' + errorMsg);
+      errorMessage.textContent = 'Error loading model: ' + errorMsg;
+    });
+
+    modelViewer.addEventListener('progress', (event) => {
+      log('Model loading progress: ' + (event.detail.totalProgress * 100) + '%');
+    });
+
+    window.addEventListener('load', () => {
+      const gl = document.createElement('canvas').getContext('webgl');
+      if (!gl) {
+        log('WebGL not supported');
+        errorMessage.textContent = 'WebGL not supported';
+      } else {
+        log('WebGL supported');
+      }
+    });
+
+    window.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', e.target.textContent);
+      log('Drag started: ' + e.target.textContent);
+    });
+
+    window.updateModel = function(modelUrl, annotationsJson) {
+      updateHotspots(modelUrl, annotationsJson);
+    };
+
+    log('Initializing with empty model');
+    updateHotspots('', '[]');
+</script>
+</body>
+</html>
